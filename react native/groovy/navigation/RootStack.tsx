@@ -20,9 +20,6 @@ export default function RootStack() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          statusBarTranslucent: true,
-          statusBarStyle: "light",
-          statusBarColor: "transparent",
         }}
         initialRouteName="Landing"
       >
