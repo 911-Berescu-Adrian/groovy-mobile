@@ -9,12 +9,15 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Landing"
-          component={LandingScreen}
-          options={{ headerShown: false }}
-        />
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          statusBarTranslucent: true,
+          statusBarStyle: "light",
+          statusBarColor: "transparent",
+        }}
+      >
+        <Stack.Screen name="Landing" component={LandingScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

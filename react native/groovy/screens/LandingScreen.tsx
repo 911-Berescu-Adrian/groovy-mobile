@@ -1,4 +1,4 @@
-import { SafeAreaView, Text, View } from "react-native";
+import { SafeAreaView, StatusBar, Text, View } from "react-native";
 import GradientText from "../components/general/GradientText";
 
 export default function LandingScreen() {
