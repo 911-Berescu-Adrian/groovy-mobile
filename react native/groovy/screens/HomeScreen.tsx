@@ -1,7 +1,9 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientText from "../components/general/GradientText";
 import CustomText from "../components/general/CustomText";
-import AddAlbumButton from "../components/add screen/AddAlbumButton";
+import AddAlbumButton from "../components/home/AddAlbumButton";
+import React from "react";
+import AlbumCard from "../components/home/AlbumCard";
 
 export default function HomeScreen() {
   return (
@@ -10,6 +12,7 @@ export default function HomeScreen() {
         Groovy
       </GradientText>
       <AddAlbumButton />
+      <AlbumCard>Miaunescovici</AlbumCard>
     </SafeAreaView>
   );
 }
