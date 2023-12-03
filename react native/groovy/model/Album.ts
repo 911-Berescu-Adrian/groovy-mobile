@@ -1,8 +1,8 @@
 export interface Album {
-  id: number;
+  albumId: number;
   title: string;
   artist: string;
   year: number;
   genre: string;
-  no_songs: number;
+  noSongs: number;
 }
