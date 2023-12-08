@@ -8,7 +8,6 @@ import { Album } from "../model/Album";
 import { FlatList, View, Text } from "react-native";
 import { RootStackParamList } from "../navigation/RootStack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import AlbumDetailBottomSheet from "../components/home/AlbumDetailBottomSheet";
 import { ScrollView } from "react-native-gesture-handler";
 import DbService from "../db/DbService";
 
@@ -22,21 +21,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
     return (
         <SafeAreaView className="flex-1 items-center  bg-background">
-            <AlbumDetailBottomSheet />
-            <GradientText className="text-4xl text-metallic mt-8">
-                Groovy
-            </GradientText>
+            <GradientText className="text-4xl text-metallic mt-8">Groovy</GradientText>
             <View className="mr-36 mb-4 mt-10">
                 <AddAlbumButton navigation={navigation} />
             </View>
             <FlatList
                 data={albums}
                 renderItem={({ item }) => (
-                    <AlbumCard
-                        key={item.albumId}
-                        albumId={item.albumId}
-                        title={item.title}
-                    />
+                    <AlbumCard key={item.albumId} albumId={item.albumId} title={item.title} navigation={navigation} />
                 )}
                 keyExtractor={(item) => item.albumId.toString()}
                 numColumns={2}

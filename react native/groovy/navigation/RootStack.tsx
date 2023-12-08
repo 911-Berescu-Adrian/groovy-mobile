@@ -8,30 +8,33 @@ import HomeScreen from "../screens/HomeScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import AddAlbumScreen from "../screens/AddAlbumScreen";
 import UpdateAlbumScreen from "../screens/UpdateAlbumScreen";
+import DetailAlbumScreen from "../screens/DetailAlbumScreen";
 
 export type RootStackParamList = {
-  Landing: undefined;
-  Home: undefined;
-  Add: undefined;
-  Update: undefined;
+    Landing: undefined;
+    Home: undefined;
+    Add: undefined;
+    Update: undefined;
+    Detail: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootStack() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-        initialRouteName="Landing"
-      >
-        <Stack.Screen name="Landing" component={LandingScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Add" component={AddAlbumScreen} />
-        <Stack.Screen name="Update" component={UpdateAlbumScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+    return (
+        <NavigationContainer>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false,
+                }}
+                initialRouteName="Landing"
+            >
+                <Stack.Screen name="Landing" component={LandingScreen} />
+                <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Screen name="Add" component={AddAlbumScreen} />
+                <Stack.Screen name="Update" component={UpdateAlbumScreen} />
+                <Stack.Screen name="Detail" component={DetailAlbumScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 }
