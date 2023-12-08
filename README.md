@@ -6,8 +6,8 @@ Ever felt like you have no time to discover new music anymore? Then this is for 
 # Landing Page
 ![alt text](https://github.com/911-Berescu-Adrian/groovy-mobile/blob/main/demo/Screenshot_20231208_152510_Expo_Go.jpg?raw=true)
 
-# Home Page 
+# Home  
 ![alt text](https://github.com/911-Berescu-Adrian/groovy-mobile/blob/main/demo/Screenshot_20231208_152657_Expo_Go.jpg?raw=true)
 
-# Add Page
+# Add album
 ![alt text](https://github.com/911-Berescu-Adrian/groovy-mobile/blob/main/demo/Screenshot_20231208_152710_Expo_Go.jpg?raw=true)
