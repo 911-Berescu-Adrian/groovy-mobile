@@ -13,6 +13,10 @@ const UpdateAlbumScreen = ({ route, navigation }) => {
     const [noSongs, setNoSongs] = useState(route.params.noSongs.toString());
 
     const updateAlbumDetails = () => {
+        if (!title || !artist || !year || !genre || !noSongs) {
+            alert("Please fill in all fields.");
+            return;
+        }
         const updatedAlbum = {
             albumId: route.params.albumId,
             title,
