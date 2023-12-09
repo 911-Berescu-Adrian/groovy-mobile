@@ -2,13 +2,16 @@ import * as SQLite from "expo-sqlite";
 
 const db = SQLite.openDatabase("db.db");
 
-export const initDatabase = () => {
+export const initDatabase = (onError) => {
     db.transaction((tx) => {
         tx.executeSql(
             "CREATE TABLE IF NOT EXISTS albums (albumId INTEGER PRIMARY KEY, title TEXT, artist TEXT, year INTEGER, genre TEXT, noSongs INTEGER);",
             [],
             () => console.log("Table created successfully"),
-            (_, error) => console.error("Error creating table:", error)
+            (_, error) => {
+                console.error("Error creating table:", error);
+                onError("Error creating table", error);
+            }
         );
     });
 };
@@ -24,14 +27,17 @@ export const dropTable = () => {
     });
 };
 
-export const insertAlbum = (album) => {
+export const insertAlbum = (album, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "INSERT INTO albums (albumId, title, artist, year, genre, noSongs) VALUES (?, ?, ?, ?, ?, ?);",
                 [album.albumId, album.title, album.artist, album.year, album.genre, album.noSongs],
                 (_, result) => console.log("Album inserted successfully"),
-                (_, error) => console.error("Error inserting album:", error)
+                (_, error) => {
+                    console.error(`Error inserting album "${album.title}. Duplicate key."`, error);
+                    onError(`Error inserting album "${album.title}". Duplicate key.`, error);
+                }
             );
         },
         null,
@@ -39,14 +45,17 @@ export const insertAlbum = (album) => {
     );
 };
 
-export const getAllAlbums = (callback) => {
+export const getAllAlbums = (callback, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "SELECT * FROM albums;",
                 [],
                 (_, result) => callback(result.rows._array),
-                (_, error) => console.error("Error fetching albums:", error)
+                (_, error) => {
+                    console.error("Error fetching albums:", error);
+                    onError("Error fetching albums", error);
+                }
             );
         },
         null,
@@ -54,14 +63,17 @@ export const getAllAlbums = (callback) => {
     );
 };
 
-export const updateAlbum = (album) => {
+export const updateAlbum = (album, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "UPDATE albums SET title=?, artist=?, year=?, genre=?, noSongs=? WHERE albumId=?;",
                 [album.title, album.artist, album.year, album.genre, album.noSongs, album.albumId],
                 (_, result) => console.log("Album updated successfully"),
-                (_, error) => console.error("Error updating album:", error)
+                (_, error) => {
+                    console.error("Error updating album:", error);
+                    onError("Error updating album", error);
+                }
             );
         },
         null,
@@ -69,14 +81,17 @@ export const updateAlbum = (album) => {
     );
 };
 
-export const deleteAlbum = (albumId) => {
+export const deleteAlbum = (albumId, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "DELETE FROM albums WHERE albumId=?;",
                 [albumId],
                 (_, result) => console.log("Album deleted successfully"),
-                (_, error) => console.error("Error deleting album:", error)
+                (_, error) => {
+                    console.error("Error deleting album:", error);
+                    onError("Error deleting album", error);
+                }
             );
         },
         null,

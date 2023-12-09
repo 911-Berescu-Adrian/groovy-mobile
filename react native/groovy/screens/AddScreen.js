@@ -20,6 +20,7 @@ const AddAlbumScreen = ({ navigation }) => {
         }
 
         const newAlbum = {
+            // albumId: Math.max(...albums, 0) + 1,
             albumId: albums.length + 1,
             title,
             artist,
@@ -28,7 +29,7 @@ const AddAlbumScreen = ({ navigation }) => {
             noSongs: parseInt(noSongs),
         };
 
-        insertAlbum(newAlbum);
+        insertAlbum(newAlbum, alert);
         setAlbums([...albums, newAlbum]);
 
         navigation.navigate("Home");
@@ -62,6 +63,7 @@ const AddAlbumScreen = ({ navigation }) => {
             />
 
             <Button title="Add Album" onPress={addAlbum} />
+            <Text></Text>
             <Button
                 title="Cancel"
                 onPress={() => {

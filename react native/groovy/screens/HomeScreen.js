@@ -12,7 +12,7 @@ export default function HomeScreen({ navigation }) {
             {
                 text: "Delete",
                 onPress: () => {
-                    deleteAlbum(albumId);
+                    deleteAlbum(albumId, alert);
                     const updatedAlbums = albums.filter((album) => album.albumId !== albumId);
                     setAlbums(updatedAlbums);
                 },
@@ -55,6 +55,7 @@ export default function HomeScreen({ navigation }) {
                                 />
                                 <Button
                                     title="Delete"
+                                    color="#fc0341"
                                     onPress={() => {
                                         handleDelete(item.albumId, item.title);
                                     }}

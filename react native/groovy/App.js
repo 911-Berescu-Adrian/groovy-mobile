@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
     useEffect(() => {
-        initDatabase();
+        initDatabase(alert);
     }, []);
 
     return (

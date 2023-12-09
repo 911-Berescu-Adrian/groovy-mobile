@@ -11,7 +11,7 @@ export const AlbumsProvider = ({ children }) => {
             try {
                 getAllAlbums((fetchedAlbums) => {
                     setAlbums(fetchedAlbums);
-                });
+                }, alert);
             } catch (error) {
                 console.error("Error fetching albums from database:", error);
             }

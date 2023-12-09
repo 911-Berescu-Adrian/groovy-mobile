@@ -26,7 +26,7 @@ const UpdateAlbumScreen = ({ route, navigation }) => {
             noSongs: parseInt(noSongs),
         };
 
-        updateAlbum(updatedAlbum);
+        updateAlbum(updatedAlbum, alert);
         const updatedAlbums = albums.map((album) => (album.albumId === updatedAlbum.albumId ? updatedAlbum : album));
         setAlbums(updatedAlbums);
 
@@ -61,6 +61,7 @@ const UpdateAlbumScreen = ({ route, navigation }) => {
             />
 
             <Button title="Update Album" onPress={updateAlbumDetails} />
+            <Text></Text>
             <Button
                 title="Cancel"
                 onPress={() => {
