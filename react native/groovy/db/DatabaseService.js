@@ -5,10 +5,21 @@ const db = SQLite.openDatabase("db.db");
 export const initDatabase = () => {
     db.transaction((tx) => {
         tx.executeSql(
-            "CREATE TABLE IF NOT EXISTS albums (albumId INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, artist TEXT, year INTEGER, genre TEXT, noSongs INTEGER);",
+            "CREATE TABLE IF NOT EXISTS albums (albumId INTEGER PRIMARY KEY, title TEXT, artist TEXT, year INTEGER, genre TEXT, noSongs INTEGER);",
             [],
             () => console.log("Table created successfully"),
             (_, error) => console.error("Error creating table:", error)
+        );
+    });
+};
+
+export const dropTable = () => {
+    db.transaction((tx) => {
+        tx.executeSql(
+            "DROP TABLE IF EXISTS albums;",
+            [],
+            () => console.log("Table dropped successfully"),
+            (_, error) => console.error("Error dropping table:", error)
         );
     });
 };
@@ -17,8 +28,8 @@ export const insertAlbum = (album) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
-                "INSERT INTO albums (title, artist, year, genre, noSongs) VALUES (?, ?, ?, ?, ?);",
-                [album.title, album.artist, album.year, album.genre, album.noSongs],
+                "INSERT INTO albums (albumId, title, artist, year, genre, noSongs) VALUES (?, ?, ?, ?, ?, ?);",
+                [album.albumId, album.title, album.artist, album.year, album.genre, album.noSongs],
                 (_, result) => console.log("Album inserted successfully"),
                 (_, error) => console.error("Error inserting album:", error)
             );

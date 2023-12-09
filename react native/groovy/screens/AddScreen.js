@@ -5,7 +5,7 @@ import { useAlbumsContext } from "../contexts/AlbumsContext";
 import { insertAlbum } from "../db/DatabaseService";
 
 const AddAlbumScreen = ({ navigation }) => {
-    const { albums } = useAlbumsContext();
+    const { albums, setAlbums } = useAlbumsContext();
 
     const [title, setTitle] = useState("");
     const [artist, setArtist] = useState("");
@@ -20,17 +20,18 @@ const AddAlbumScreen = ({ navigation }) => {
         }
 
         const newAlbum = {
-            albumId: 0,
+            albumId: albums.length + 1,
             title,
             artist,
-            year: parseInt(year), // Assuming the year is a number
+            year: parseInt(year),
             genre,
             noSongs: parseInt(noSongs),
         };
 
         insertAlbum(newAlbum);
+        setAlbums([...albums, newAlbum]);
 
-        navigation.goBack();
+        navigation.navigate("Home");
     };
 
     return (

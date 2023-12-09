@@ -20,7 +20,7 @@ export const AlbumsProvider = ({ children }) => {
         fetchAlbums();
     }, []);
 
-    return <AlbumsContext.Provider value={{ albums }}>{children}</AlbumsContext.Provider>;
+    return <AlbumsContext.Provider value={{ albums, setAlbums }}>{children}</AlbumsContext.Provider>;
 };
 
 export const useAlbumsContext = () => {

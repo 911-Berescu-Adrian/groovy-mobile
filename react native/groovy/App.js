@@ -7,14 +7,13 @@ import HomeScreen from "./screens/HomeScreen";
 import UpdateScreen from "./screens/UpdateScreen";
 import AddScreen from "./screens/AddScreen";
 import { AlbumsProvider } from "./contexts/AlbumsContext";
-import { getAllAlbums, initDatabase, insertAlbum } from "./db/DatabaseService";
+import { dropTable, getAllAlbums, initDatabase, insertAlbum } from "./db/DatabaseService";
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
     useEffect(() => {
         initDatabase();
-        insertAlbum({ albumId: 0, title: "a", artist: "b", year: 3, genre: "c", noSongs: 0 });
     }, []);
 
     return (
