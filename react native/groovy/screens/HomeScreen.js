@@ -12,9 +12,14 @@ export default function HomeScreen({ navigation }) {
             {
                 text: "Delete",
                 onPress: () => {
-                    deleteAlbum(albumId, alert);
-                    const updatedAlbums = albums.filter((album) => album.albumId !== albumId);
-                    setAlbums(updatedAlbums);
+                    deleteAlbum(
+                        albumId,
+                        () => {
+                            const updatedAlbums = albums.filter((album) => album.albumId !== albumId);
+                            setAlbums(updatedAlbums);
+                        },
+                        alert
+                    );
                 },
                 style: "destructive",
             },
@@ -33,6 +38,7 @@ export default function HomeScreen({ navigation }) {
                     keyExtractor={(album) => album.albumId.toString()}
                     renderItem={({ item }) => (
                         <View>
+                            <Text>{item.albumId} remove this</Text>
                             <Text>Title: {item.title}</Text>
                             <Text>Artist: {item.artist}</Text>
                             <Text>Year: {item.year}</Text>

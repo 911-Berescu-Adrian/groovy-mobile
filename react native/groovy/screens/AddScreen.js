@@ -20,8 +20,7 @@ const AddAlbumScreen = ({ navigation }) => {
         }
 
         const newAlbum = {
-            // albumId: Math.max(...albums, 0) + 1,
-            albumId: albums.length + 1,
+            albumId: albums.reduce((maxId, album) => Math.max(maxId, album.albumId), 0) + 1,
             title,
             artist,
             year: parseInt(year),
@@ -29,8 +28,7 @@ const AddAlbumScreen = ({ navigation }) => {
             noSongs: parseInt(noSongs),
         };
 
-        insertAlbum(newAlbum, alert);
-        setAlbums([...albums, newAlbum]);
+        insertAlbum(newAlbum, () => setAlbums([...albums, newAlbum]), alert);
 
         navigation.navigate("Home");
     };

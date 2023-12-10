@@ -26,9 +26,16 @@ const UpdateAlbumScreen = ({ route, navigation }) => {
             noSongs: parseInt(noSongs),
         };
 
-        updateAlbum(updatedAlbum, alert);
-        const updatedAlbums = albums.map((album) => (album.albumId === updatedAlbum.albumId ? updatedAlbum : album));
-        setAlbums(updatedAlbums);
+        updateAlbum(
+            updatedAlbum,
+            () => {
+                const updatedAlbums = albums.map((album) =>
+                    album.albumId === updatedAlbum.albumId ? updatedAlbum : album
+                );
+                setAlbums(updatedAlbums);
+            },
+            alert
+        );
 
         navigation.navigate("Home");
     };

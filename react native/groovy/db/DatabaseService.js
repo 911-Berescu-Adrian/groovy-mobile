@@ -27,13 +27,16 @@ export const dropTable = () => {
     });
 };
 
-export const insertAlbum = (album, onError) => {
+export const insertAlbum = (album, onSuccess, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "INSERT INTO albums (albumId, title, artist, year, genre, noSongs) VALUES (?, ?, ?, ?, ?, ?);",
                 [album.albumId, album.title, album.artist, album.year, album.genre, album.noSongs],
-                (_, result) => console.log("Album inserted successfully"),
+                (_, result) => {
+                    onSuccess();
+                    console.log("Album inserted successfully");
+                },
                 (_, error) => {
                     console.error(`Error inserting album "${album.title}. Duplicate key."`, error);
                     onError(`Error inserting album "${album.title}". Duplicate key.`, error);
@@ -63,13 +66,16 @@ export const getAllAlbums = (callback, onError) => {
     );
 };
 
-export const updateAlbum = (album, onError) => {
+export const updateAlbum = (album, onSuccess, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "UPDATE albums SET title=?, artist=?, year=?, genre=?, noSongs=? WHERE albumId=?;",
                 [album.title, album.artist, album.year, album.genre, album.noSongs, album.albumId],
-                (_, result) => console.log("Album updated successfully"),
+                (_, result) => {
+                    onSuccess();
+                    console.log("Album updated successfully");
+                },
                 (_, error) => {
                     console.error("Error updating album:", error);
                     onError("Error updating album", error);
@@ -81,13 +87,16 @@ export const updateAlbum = (album, onError) => {
     );
 };
 
-export const deleteAlbum = (albumId, onError) => {
+export const deleteAlbum = (albumId, onSuccess, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
                 "DELETE FROM albums WHERE albumId=?;",
                 [albumId],
-                (_, result) => console.log("Album deleted successfully"),
+                (_, result) => {
+                    onSuccess();
+                    console.log("Album deleted successfully");
+                },
                 (_, error) => {
                     console.error("Error deleting album:", error);
                     onError("Error deleting album", error);
