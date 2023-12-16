@@ -1,0 +1,34 @@
+[
+  {
+    "albumId": 0,
+    "title": "Greatest Hits",
+    "artist": "The Legends",
+    "year": 2023,
+    "genre": "Rock",
+    "noSongs": 15
+  },
+  {
+    "albumId": 1,
+    "title": "Greatest Hits",
+    "artist": "The Legends",
+    "year": 20223,
+    "genre": "Rock",
+    "noSongs": 15
+  },
+  {
+    "albumId": 2,
+    "title": "Greatdest Hits",
+    "artist": "The Legends",
+    "year": 20223,
+    "genre": "Rock",
+    "noSongs": 15
+  },
+  {
+    "albumId": 3,
+    "title": "Greatdest Hits",
+    "artist": "The Legends",
+    "year": 20223,
+    "genre": "Rock",
+    "noSongs": 15
+  }
+]

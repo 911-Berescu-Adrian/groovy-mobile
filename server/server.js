@@ -1,23 +1,53 @@
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
+const bodyParser = require("body-parser");
+const { initializeRepository, getAlbums, addAlbum, deleteAlbum, updateAlbum } = require("./db");
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server: server });
+app.use(bodyParser.json());
+
+initializeRepository();
+
+const broadcastUpdate = () => {
+    const albums = getAlbums();
+    const updateMessage = JSON.stringify({ type: "update", data: albums });
+
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(updateMessage);
+        }
+    });
+};
 
 app.get("/", (req, res) => res.send("yo world"));
 
-wss.on("connection", (ws) => {
-    console.log("A user connected");
+app.get("/album", (req, res) => {
+    res.json(getAlbums());
+});
 
-    ws.on("message", (message) => {
-        const decodedMessage = message.toString("utf-8");
-        console.log("received: ", decodedMessage);
-        ws.send(`gotchu ${decodedMessage}`);
-    });
+app.post("/album", (req, res) => {
+    const newAlbum = req.body;
+    const result = addAlbum(newAlbum);
+    broadcastUpdate();
+    res.json(result);
+});
 
-    ws.send("Welcome to the server!");
+app.delete("/album/:albumId", (req, res) => {
+    const albumId = parseInt(req.params.albumId);
+    const result = deleteAlbum(albumId);
+    broadcastUpdate();
+    res.json(result);
+});
+
+app.patch("/album/:albumId", (req, res) => {
+    const albumId = parseInt(req.params.albumId);
+    const album = req.body;
+    const result = updateAlbum(albumId, album);
+    broadcastUpdate();
+    res.json(result);
 });
 
 const PORT = process.env.PORT || 3001;

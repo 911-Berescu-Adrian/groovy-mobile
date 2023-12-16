@@ -30,7 +30,7 @@ const AddAlbumScreen = ({ navigation }) => {
 
         insertAlbum(newAlbum, () => setAlbums([...albums, newAlbum]), alert);
 
-        navigation.navigate("Home");
+        navigation.goBack();
     };
 
     return (
