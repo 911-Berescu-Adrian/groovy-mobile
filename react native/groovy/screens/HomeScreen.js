@@ -1,7 +1,8 @@
 import { Button, View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect } from "react";
-import { deleteAlbum, getAllAlbums } from "../db/DatabaseService";
+import { deleteAlbum, getAllAlbums, insertAlbum } from "../db/DatabaseService";
 import { useAlbumsContext } from "../contexts/AlbumsContext";
+import { SOCKET_URL } from "../constants";
 
 export default function HomeScreen({ navigation }) {
     const { albums, setAlbums } = useAlbumsContext();
@@ -24,6 +25,61 @@ export default function HomeScreen({ navigation }) {
                 style: "destructive",
             },
         ]);
+    };
+
+    const initSocket = () => {
+        const socket = new WebSocket(SOCKET_URL);
+
+        socket.onopen = () => {
+            console.log("WebSocket connection opened");
+        };
+
+        socket.onmessage = (event) => {
+            console.log("Received message:", event.data);
+            const parsedMessage = JSON.parse(event.data);
+            switch (parsedMessage.type) {
+                case "create":
+                    handleCreateMessage(parsedMessage.data);
+                    break;
+                case "remove":
+                    handleRemoveMessage(parsedMessage.data);
+                    break;
+                case "update":
+                    handleUpdateMessage(parsedMessage.data);
+                    break;
+                default:
+                    console.warn("Unknown message type:", parsedMessage.type);
+            }
+        };
+
+        socket.onclose = (event) => {
+            console.log("WebSocket connection closed:", event.code, event.reason);
+        };
+
+        socket.onerror = (event) => {
+            console.error("WebSocket error:", event);
+        };
+
+        return () => {
+            socket.close();
+        };
+    };
+    useEffect(() => {
+        initSocket();
+    }, []);
+
+    const handleCreateMessage = (albumData) => {
+        const newAlbum = {
+            albumId: albumData.albumId,
+            title: albumData.title,
+            artist: albumData.artist,
+            year: albumData.year,
+            genre: albumData.genre,
+            noSongs: albumData.noSongs,
+        };
+
+        console.log(albums);
+        insertAlbum(newAlbum, () => setAlbums([...albums, newAlbum]), alert);
     };
 
     return (

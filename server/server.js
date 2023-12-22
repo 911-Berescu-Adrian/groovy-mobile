@@ -2,18 +2,20 @@ const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const { initializeRepository, getAlbums, addAlbum, deleteAlbum, updateAlbum } = require("./db");
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server: server });
+
+app.use(cors());
 app.use(bodyParser.json());
 
 initializeRepository();
 
-const broadcastUpdate = () => {
-    const albums = getAlbums();
-    const updateMessage = JSON.stringify({ type: "update", data: albums });
+const broadcastUpdate = (type, change) => {
+    const updateMessage = JSON.stringify({ type: type, data: change });
 
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
@@ -31,22 +33,21 @@ app.get("/album", (req, res) => {
 app.post("/album", (req, res) => {
     const newAlbum = req.body;
     const result = addAlbum(newAlbum);
-    broadcastUpdate();
+    broadcastUpdate("create", newAlbum);
     res.json(result);
 });
 
 app.delete("/album/:albumId", (req, res) => {
     const albumId = parseInt(req.params.albumId);
     const result = deleteAlbum(albumId);
-    broadcastUpdate();
+    broadcastUpdate("remove", albumId);
     res.json(result);
 });
 
-app.patch("/album/:albumId", (req, res) => {
-    const albumId = parseInt(req.params.albumId);
+app.post("/album", (req, res) => {
     const album = req.body;
-    const result = updateAlbum(albumId, album);
-    broadcastUpdate();
+    const result = updateAlbum(album);
+    broadcastUpdate("update", album);
     res.json(result);
 });
 

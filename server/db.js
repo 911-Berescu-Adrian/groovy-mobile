@@ -32,8 +32,9 @@ const addAlbum = (newAlbum) => {
     return { message: "Album added successfully" };
 };
 
-const updateAlbum = (albumId, updatedAlbum) => {
-    albums = albums.map((album) => (album.albumId === albumId ? { ...album, ...updatedAlbum } : album));
+const updateAlbum = (updatedAlbum) => {
+    const updatedAlbums = albums.map((album) => (album.albumId === updatedAlbum.albumId ? { ...updatedAlbum } : album));
+    albums = updatedAlbums;
     saveRepository();
     return { message: "Album updated successfully" };
 };

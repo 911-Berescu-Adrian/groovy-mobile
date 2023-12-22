@@ -6,15 +6,27 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/HomeScreen";
 import UpdateScreen from "./screens/UpdateScreen";
 import AddScreen from "./screens/AddScreen";
-import { AlbumsProvider } from "./contexts/AlbumsContext";
-import { dropTable, getAllAlbums, initDatabase, insertAlbum } from "./db/DatabaseService";
+import { AlbumsProvider, useAlbumsContext } from "./contexts/AlbumsContext";
+import { BACKEND_URL, SOCKET_URL } from "./constants";
+import { copyDataToLocalDatabase, dropTable, getAllAlbums, initDatabase, insertAlbum } from "./db/DatabaseService";
+import axios from "axios";
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
     useEffect(() => {
         initDatabase(alert);
+        fetchData();
     }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(BACKEND_URL + "/album");
+            copyDataToLocalDatabase(response.data, alert);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     return (
         <AlbumsProvider>

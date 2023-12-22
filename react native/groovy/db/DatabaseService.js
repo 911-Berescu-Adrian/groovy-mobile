@@ -66,6 +66,32 @@ export const getAllAlbums = (callback, onError) => {
     );
 };
 
+export const copyDataToLocalDatabase = (serverAlbums, onError) => {
+    db.transaction(
+        (tx) => {
+            tx.executeSql("DELETE FROM albums;", [], (_, result) => {
+                serverAlbums.forEach((album) => {
+                    tx.executeSql(
+                        "INSERT INTO albums (albumId, title, artist, year, genre, noSongs) VALUES (?, ?, ?, ?, ?, ?);",
+                        [album.albumId, album.title, album.artist, album.year, album.genre, album.noSongs],
+                        (_, result) => {
+                            console.log("Album copied to local database:", album);
+                        },
+                        (_, error) => {
+                            console.error("Error copying album to local database:", error);
+                            onError("Error copying album to local database", error);
+                        }
+                    );
+                });
+            });
+        },
+        null,
+        () => {
+            console.log("Transaction completed");
+        }
+    );
+};
+
 export const updateAlbum = (album, onSuccess, onError) => {
     db.transaction(
         (tx) => {
