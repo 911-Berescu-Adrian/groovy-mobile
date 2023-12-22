@@ -37,7 +37,7 @@ const UpdateAlbumScreen = ({ route, navigation }) => {
             alert
         );
 
-        navigation.navigate("Home");
+        navigation.goBack();
     };
 
     return (

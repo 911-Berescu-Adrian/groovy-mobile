@@ -1,11 +1,12 @@
 import { Button, View, Text, FlatList, StyleSheet, Alert } from "react-native";
-import React, { useEffect } from "react";
-import { deleteAlbum, getAllAlbums, insertAlbum } from "../db/DatabaseService";
+import React, { useEffect, useRef } from "react";
+import { deleteAlbum, getAllAlbums, insertAlbum, updateAlbum } from "../db/DatabaseService";
 import { useAlbumsContext } from "../contexts/AlbumsContext";
 import { SOCKET_URL } from "../constants";
 
 export default function HomeScreen({ navigation }) {
     const { albums, setAlbums } = useAlbumsContext();
+    const socketRef = useRef(null);
 
     const handleDelete = (albumId, title) => {
         Alert.alert("Confirm deletion", `Are you sure you want to delete "${title}"?`, [
@@ -28,47 +29,48 @@ export default function HomeScreen({ navigation }) {
     };
 
     const initSocket = () => {
-        const socket = new WebSocket(SOCKET_URL);
+        socketRef.current = new WebSocket(SOCKET_URL);
 
-        socket.onopen = () => {
+        socketRef.current.onopen = () => {
             console.log("WebSocket connection opened");
         };
 
-        socket.onmessage = (event) => {
+        socketRef.current.onmessage = (event) => {
             console.log("Received message:", event.data);
             const parsedMessage = JSON.parse(event.data);
             switch (parsedMessage.type) {
                 case "create":
-                    handleCreateMessage(parsedMessage.data);
+                    handleServerCreate(parsedMessage.data);
                     break;
                 case "remove":
-                    handleRemoveMessage(parsedMessage.data);
+                    handleServerRemove(parsedMessage.data);
                     break;
                 case "update":
-                    handleUpdateMessage(parsedMessage.data);
+                    handleServerUpdate(parsedMessage.data);
                     break;
                 default:
                     console.warn("Unknown message type:", parsedMessage.type);
             }
         };
 
-        socket.onclose = (event) => {
+        socketRef.current.onclose = (event) => {
             console.log("WebSocket connection closed:", event.code, event.reason);
         };
 
-        socket.onerror = (event) => {
+        socketRef.current.onerror = (event) => {
             console.error("WebSocket error:", event);
-        };
-
-        return () => {
-            socket.close();
         };
     };
     useEffect(() => {
         initSocket();
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.close();
+            }
+        };
     }, []);
 
-    const handleCreateMessage = (albumData) => {
+    const handleServerCreate = (albumData) => {
         const newAlbum = {
             albumId: albumData.albumId,
             title: albumData.title,
@@ -78,8 +80,44 @@ export default function HomeScreen({ navigation }) {
             noSongs: albumData.noSongs,
         };
 
-        console.log(albums);
-        insertAlbum(newAlbum, () => setAlbums([...albums, newAlbum]), alert);
+        insertAlbum(newAlbum, () => setAlbums((prevAlbums) => [...prevAlbums, newAlbum]), alert);
+    };
+
+    const handleServerRemove = (albumId) => {
+        deleteAlbum(
+            albumId,
+            () => {
+                setAlbums((prevAlbums) => {
+                    const updatedAlbums = prevAlbums.filter((album) => album.albumId !== albumId);
+                    return updatedAlbums;
+                });
+            },
+            alert
+        );
+    };
+
+    const handleServerUpdate = (albumData) => {
+        const updatedAlbum = {
+            albumId: albumData.albumId,
+            title: albumData.title,
+            artist: albumData.artist,
+            year: albumData.year,
+            genre: albumData.genre,
+            noSongs: albumData.noSongs,
+        };
+
+        updateAlbum(
+            updatedAlbum,
+            () => {
+                setAlbums((prevAlbums) => {
+                    const updatedAlbums = prevAlbums.map((album) =>
+                        album.albumId === updatedAlbum.albumId ? updatedAlbum : album
+                    );
+                    return updatedAlbums;
+                });
+            },
+            alert
+        );
     };
 
     return (
