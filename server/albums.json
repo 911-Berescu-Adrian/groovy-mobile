@@ -1,8 +1,19 @@
 [
   {
-    "actionType": "create",
-    "albumId": "5bzk4m8",
-    "title": "1",
+    "queueId": 4,
+    "actionType": "update",
+    "albumId": "1s2jd46",
+    "title": "okoktar",
+    "artist": "OH year",
+    "year": 1,
+    "genre": "nibil",
+    "noSongs": 15
+  },
+  {
+    "queueId": 1,
+    "actionType": "update",
+    "albumId": "hxocf2n",
+    "title": "miau",
     "artist": "1",
     "year": 1,
     "genre": "1",

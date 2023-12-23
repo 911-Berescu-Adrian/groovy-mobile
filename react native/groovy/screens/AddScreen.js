@@ -40,7 +40,6 @@ const AddAlbumScreen = ({ navigation }) => {
             genre,
             noSongs: parseInt(noSongs),
         };
-
         insertTemporaryAction(
             newAction,
             () => {

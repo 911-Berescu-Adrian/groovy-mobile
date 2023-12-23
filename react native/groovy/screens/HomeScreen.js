@@ -31,7 +31,7 @@ export default function HomeScreen({ navigation }) {
                         actionType: "remove",
                         ...deletedAlbum,
                     };
-                    console.log("MIAUNEL", newAction);
+
                     insertTemporaryAction(
                         newAction,
                         () => {
@@ -84,6 +84,7 @@ export default function HomeScreen({ navigation }) {
     useEffect(() => {
         sendActionsToServer();
         console.log("ACTIONS", actions);
+        console.log("ALBUMS", albums);
     }, [actions]);
 
     const sendActionsToServer = async () => {
@@ -93,7 +94,7 @@ export default function HomeScreen({ navigation }) {
                     case "create":
                         await axios.post(`${BACKEND_URL}/album`, action);
                         deleteTemporaryAction(
-                            action.albumId,
+                            action.queueId,
                             () => {
                                 setActions((prevActions) =>
                                     prevActions.filter((act) => act.queueId !== action.queueId)
@@ -108,7 +109,7 @@ export default function HomeScreen({ navigation }) {
                     case "remove":
                         await axios.delete(`${BACKEND_URL}/album/${action.albumId}`);
                         deleteTemporaryAction(
-                            action.albumId,
+                            action.queueId,
                             () => {
                                 setActions((prevActions) =>
                                     prevActions.filter((act) => act.queueId !== action.queueId)
@@ -119,7 +120,19 @@ export default function HomeScreen({ navigation }) {
                         break;
                     case "update":
                         await axios.put(`${BACKEND_URL}/album`, action);
-
+                        deleteTemporaryAction(
+                            action.queueId,
+                            () => {
+                                const updatedAlbums = albums.map((album) =>
+                                    album.albumId === action.albumId ? action : album
+                                );
+                                setAlbums(updatedAlbums);
+                                setActions((prevActions) =>
+                                    prevActions.filter((act) => act.queueId !== action.queueId)
+                                );
+                            },
+                            alert
+                        );
                         break;
 
                     default:
@@ -189,9 +202,6 @@ export default function HomeScreen({ navigation }) {
             },
             alert
         );
-
-        console.log("albums", albums);
-        console.log("actions", actions);
     };
 
     return (

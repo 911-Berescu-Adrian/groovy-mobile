@@ -200,7 +200,7 @@ export const deleteTemporaryAction = (id, onSuccess, onError) => {
     db.transaction(
         (tx) => {
             tx.executeSql(
-                "DELETE FROM temporaryActions WHERE albumId=?;",
+                "DELETE FROM temporaryActions WHERE queueId=?;",
                 [id],
                 (_, result) => {
                     onSuccess();

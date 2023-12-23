@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
-import { updateAlbum } from "../db/DatabaseService";
+import { insertTemporaryAction, updateAlbum } from "../db/DatabaseService";
 import { useAlbumsContext } from "../contexts/AlbumsContext";
+import { useActionsContext } from "../contexts/ActionContext";
 
 const UpdateAlbumScreen = ({ route, navigation }) => {
     const { albums, setAlbums } = useAlbumsContext();
+    const { actions, setActions } = useActionsContext();
 
     const [title, setTitle] = useState(route.params.title);
     const [artist, setArtist] = useState(route.params.artist);
@@ -26,13 +28,21 @@ const UpdateAlbumScreen = ({ route, navigation }) => {
             noSongs: parseInt(noSongs),
         };
 
-        updateAlbum(
-            updatedAlbum,
+        const oldAlbum = albums.find((album) => album.albumId === updatedAlbum.albumId);
+        const newAction = {
+            actionType: "update",
+            oldAlbum: { actionType: "update", ...oldAlbum },
+            updatedAlbum: { actionType: "update", ...updatedAlbum },
+        };
+
+        insertTemporaryAction(
+            newAction.updatedAlbum,
             () => {
                 const updatedAlbums = albums.map((album) =>
-                    album.albumId === updatedAlbum.albumId ? updatedAlbum : album
+                    album.albumId === newAction.updatedAlbum.albumId ? newAction.updatedAlbum : album
                 );
                 setAlbums(updatedAlbums);
+                setActions([...actions, newAction.updatedAlbum]);
             },
             alert
         );

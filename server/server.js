@@ -48,6 +48,7 @@ app.delete("/album/:albumId", (req, res) => {
 
 app.put("/album", (req, res) => {
     const album = req.body;
+    console.log(req.body);
     const result = updateAlbum(album);
     broadcastUpdate("update", album);
     res.json(result);
