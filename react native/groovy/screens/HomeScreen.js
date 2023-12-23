@@ -6,6 +6,7 @@ import {
     deleteTemporaryAction,
     getAllAlbums,
     insertAlbum,
+    insertTemporaryAction,
     updateAlbum,
 } from "../db/DatabaseService";
 import { useAlbumsContext } from "../contexts/AlbumsContext";
@@ -19,20 +20,24 @@ export default function HomeScreen({ navigation }) {
 
     const socketRef = useRef(null);
 
-    console.log("actions", actions);
-    console.log("albums", albums);
-
     const handleDelete = (albumId, title) => {
         Alert.alert("Confirm deletion", `Are you sure you want to delete "${title}"?`, [
             { text: "Cancel", style: "cancel" },
             {
                 text: "Delete",
                 onPress: () => {
-                    deleteAlbum(
-                        albumId,
+                    const deletedAlbum = albums.find((album) => album.albumId === albumId);
+                    const newAction = {
+                        actionType: "remove",
+                        ...deletedAlbum,
+                    };
+                    console.log("MIAUNEL", newAction);
+                    insertTemporaryAction(
+                        newAction,
                         () => {
-                            const updatedAlbums = albums.filter((album) => album.albumId !== albumId);
+                            const updatedAlbums = albums.filter((album) => album.albumId !== newAction.albumId);
                             setAlbums(updatedAlbums);
+                            setActions([...actions, newAction]);
                         },
                         alert
                     );
@@ -78,6 +83,7 @@ export default function HomeScreen({ navigation }) {
 
     useEffect(() => {
         sendActionsToServer();
+        console.log("ACTIONS", actions);
     }, [actions]);
 
     const sendActionsToServer = async () => {
@@ -99,13 +105,23 @@ export default function HomeScreen({ navigation }) {
                             alert
                         );
                         break;
-
-                    case "update":
-                        await axios.put(`${BACKEND_URL}/album`, action);
-                        break;
                     case "remove":
                         await axios.delete(`${BACKEND_URL}/album/${action.albumId}`);
+                        deleteTemporaryAction(
+                            action.albumId,
+                            () => {
+                                setActions((prevActions) =>
+                                    prevActions.filter((act) => act.queueId !== action.queueId)
+                                );
+                            },
+                            alert
+                        );
                         break;
+                    case "update":
+                        await axios.put(`${BACKEND_URL}/album`, action);
+
+                        break;
+
                     default:
                         console.warn("Unknown action type:", action.actionType);
                 }
