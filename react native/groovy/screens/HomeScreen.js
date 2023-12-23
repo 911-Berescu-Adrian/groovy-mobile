@@ -1,12 +1,26 @@
 import { Button, View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useRef } from "react";
-import { deleteAlbum, getAllAlbums, insertAlbum, updateAlbum } from "../db/DatabaseService";
+import {
+    copyDataToLocalDatabase,
+    deleteAlbum,
+    deleteTemporaryAction,
+    getAllAlbums,
+    insertAlbum,
+    updateAlbum,
+} from "../db/DatabaseService";
 import { useAlbumsContext } from "../contexts/AlbumsContext";
-import { SOCKET_URL } from "../constants";
+import { BACKEND_URL, SOCKET_URL } from "../constants";
+import { useActionsContext } from "../contexts/ActionContext";
+import axios from "axios";
 
 export default function HomeScreen({ navigation }) {
     const { albums, setAlbums } = useAlbumsContext();
+    const { actions, setActions } = useActionsContext();
+
     const socketRef = useRef(null);
+
+    console.log("actions", actions);
+    console.log("albums", albums);
 
     const handleDelete = (albumId, title) => {
         Alert.alert("Confirm deletion", `Are you sure you want to delete "${title}"?`, [
@@ -58,9 +72,50 @@ export default function HomeScreen({ navigation }) {
         };
 
         socketRef.current.onerror = (event) => {
-            console.error("WebSocket error:", event);
+            console.error("Couldn't connect to WebSocket. Check internet connection.");
         };
     };
+
+    useEffect(() => {
+        sendActionsToServer();
+    }, [actions]);
+
+    const sendActionsToServer = async () => {
+        for (const action of actions) {
+            try {
+                switch (action.actionType) {
+                    case "create":
+                        await axios.post(`${BACKEND_URL}/album`, action);
+                        deleteTemporaryAction(
+                            action.albumId,
+                            () => {
+                                setActions((prevActions) =>
+                                    prevActions.filter((act) => act.queueId !== action.queueId)
+                                );
+                                setAlbums((prevAlbums) =>
+                                    prevAlbums.filter((album) => album.albumId !== action.albumId)
+                                );
+                            },
+                            alert
+                        );
+                        break;
+
+                    case "update":
+                        await axios.put(`${BACKEND_URL}/album`, action);
+                        break;
+                    case "remove":
+                        await axios.delete(`${BACKEND_URL}/album/${action.albumId}`);
+                        break;
+                    default:
+                        console.warn("Unknown action type:", action.actionType);
+                }
+                setActions((prevActions) => prevActions.filter((act) => act.queueId !== action.queueId));
+            } catch (error) {
+                console.error("Couldn't connect to the server. Check internet connection.");
+            }
+        }
+    };
+
     useEffect(() => {
         initSocket();
         return () => {
@@ -118,6 +173,9 @@ export default function HomeScreen({ navigation }) {
             },
             alert
         );
+
+        console.log("albums", albums);
+        console.log("actions", actions);
     };
 
     return (
@@ -129,7 +187,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.flatListContainer}>
                 <FlatList
                     data={albums}
-                    keyExtractor={(album) => album.albumId.toString()}
+                    keyExtractor={(album) => album.albumId}
                     renderItem={({ item }) => (
                         <View>
                             <Text>Title: {item.title}</Text>

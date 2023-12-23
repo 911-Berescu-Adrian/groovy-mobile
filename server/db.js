@@ -22,27 +22,26 @@ const saveRepository = () => {
 const getAlbums = () => albums;
 
 const addAlbum = (newAlbum) => {
-    if (albums.length === 0) {
-        newAlbum.albumId = 0;
-    } else {
-        newAlbum.albumId = Math.max(...albums.map((album) => album.albumId)) + 1;
-    }
+    newAlbum.albumId = Math.random().toString(36).slice(2, 9);
     albums.push(newAlbum);
     saveRepository();
-    return { message: "Album added successfully" };
+    console.log("From server: album added successfully");
+    return { message: "From server: album added successfully" };
 };
 
 const updateAlbum = (updatedAlbum) => {
     const updatedAlbums = albums.map((album) => (album.albumId === updatedAlbum.albumId ? { ...updatedAlbum } : album));
     albums = updatedAlbums;
     saveRepository();
-    return { message: "Album updated successfully" };
+    console.log("From server: album updated successfully");
+    return { message: "From server: album updated successfully" };
 };
 
 const deleteAlbum = (albumId) => {
     albums = albums.filter((album) => album.albumId !== albumId);
     saveRepository();
-    return { message: "Album deleted successfully" };
+    console.log("From server: album deleted successfully");
+    return { message: "From server: album deleted successfully" };
 };
 
 module.exports = {

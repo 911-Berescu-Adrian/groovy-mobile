@@ -1,5 +1,6 @@
 const Album = {
-    albumId: 0,
+    albumId: "",
+    serverId: "",
     title: "",
     artist: "",
     year: 0,

@@ -5,12 +5,21 @@ const db = SQLite.openDatabase("db.db");
 export const initDatabase = (onError) => {
     db.transaction((tx) => {
         tx.executeSql(
-            "CREATE TABLE IF NOT EXISTS albums (albumId INTEGER PRIMARY KEY, title TEXT, artist TEXT, year INTEGER, genre TEXT, noSongs INTEGER);",
+            "CREATE TABLE IF NOT EXISTS albums (albumId TEXT PRIMARY KEY, title TEXT, artist TEXT, year INTEGER, genre TEXT, noSongs INTEGER);",
             [],
             () => console.log("Table created successfully"),
             (_, error) => {
                 console.error("Error creating table:", error);
                 onError("Error creating table", error);
+            }
+        );
+        tx.executeSql(
+            "CREATE TABLE IF NOT EXISTS temporaryActions (queueId INTEGER PRIMARY KEY AUTOINCREMENT, actionType TEXT, albumId TEXT, title TEXT, artist TEXT, year INTEGER, genre TEXT, noSongs INTEGER);",
+            [],
+            () => console.log("TemporaryActions table created successfully"),
+            (_, error) => {
+                console.error("Error creating TemporaryActions table:", error);
+                onError("Error creating TemporaryActions table", error);
             }
         );
     });
@@ -20,6 +29,12 @@ export const dropTable = () => {
     db.transaction((tx) => {
         tx.executeSql(
             "DROP TABLE IF EXISTS albums;",
+            [],
+            () => console.log("Table dropped successfully"),
+            (_, error) => console.error("Error dropping table:", error)
+        );
+        tx.executeSql(
+            "DROP TABLE IF EXISTS temporaryActions;",
             [],
             () => console.log("Table dropped successfully"),
             (_, error) => console.error("Error dropping table:", error)
@@ -126,6 +141,95 @@ export const deleteAlbum = (albumId, onSuccess, onError) => {
                 (_, error) => {
                     console.error("Error deleting album:", error);
                     onError("Error deleting album", error);
+                }
+            );
+        },
+        null,
+        () => console.log("Transaction completed")
+    );
+};
+
+export const insertTemporaryAction = (action, onSuccess, onError) => {
+    db.transaction(
+        (tx) => {
+            tx.executeSql(
+                "INSERT INTO temporaryActions (actionType, albumId, title, artist, year, genre, noSongs) VALUES (?, ?, ?, ?, ?, ?, ?);",
+                [
+                    action.actionType,
+                    action.albumId,
+                    action.title,
+                    action.artist,
+                    action.year,
+                    action.genre,
+                    action.noSongs,
+                ],
+                (_, result) => {
+                    onSuccess();
+                    console.log("Temporary action inserted successfully");
+                },
+                (_, error) => {
+                    console.error("Error inserting temporary action:", error);
+                    onError("Error inserting temporary action");
+                }
+            );
+        },
+        null,
+        () => console.log("Transaction completed")
+    );
+};
+
+export const getAllTemporaryActions = (callback, onError) => {
+    db.transaction(
+        (tx) => {
+            tx.executeSql(
+                "SELECT * FROM temporaryActions ORDER BY queueId ASC;",
+                [],
+                (_, result) => callback(result.rows._array),
+                (_, error) => {
+                    console.error("Error fetching temporary actions:", error);
+                    onError("Error fetching temporary actions", error);
+                }
+            );
+        },
+        null,
+        () => console.log("Transaction completed")
+    );
+};
+
+export const deleteTemporaryAction = (id, onSuccess, onError) => {
+    db.transaction(
+        (tx) => {
+            tx.executeSql(
+                "DELETE FROM temporaryActions WHERE albumId=?;",
+                [id],
+                (_, result) => {
+                    onSuccess();
+                    console.log("Temporary action deleted successfully");
+                },
+                (_, error) => {
+                    console.error("Error deleting temporary action:", error);
+                    onError("Error deleting temporary action", error);
+                }
+            );
+        },
+        null,
+        () => console.log("Transaction completed")
+    );
+};
+
+export const deleteAllTemporaryActions = (onSuccess, onError) => {
+    db.transaction(
+        (tx) => {
+            tx.executeSql(
+                "DELETE FROM temporaryActions;",
+                [],
+                (_, result) => {
+                    onSuccess();
+                    console.log("All temporary actions deleted successfully");
+                },
+                (_, error) => {
+                    console.error("Error deleting temporary actions:", error);
+                    onError("Error deleting temporary actions", error);
                 }
             );
         },

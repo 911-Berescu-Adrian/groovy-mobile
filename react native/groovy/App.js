@@ -10,6 +10,7 @@ import { AlbumsProvider, useAlbumsContext } from "./contexts/AlbumsContext";
 import { BACKEND_URL, SOCKET_URL } from "./constants";
 import { copyDataToLocalDatabase, dropTable, getAllAlbums, initDatabase, insertAlbum } from "./db/DatabaseService";
 import axios from "axios";
+import { ActionsProvider } from "./contexts/ActionContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,19 +25,21 @@ const App = () => {
             const response = await axios.get(BACKEND_URL + "/album");
             copyDataToLocalDatabase(response.data, alert);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Couldn't connect to the server.");
         }
     };
 
     return (
         <AlbumsProvider>
-            <NavigationContainer>
-                <Stack.Navigator>
-                    <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="Add" component={AddScreen} />
-                    <Stack.Screen name="Update" component={UpdateScreen} />
-                </Stack.Navigator>
-            </NavigationContainer>
+            <ActionsProvider>
+                <NavigationContainer>
+                    <Stack.Navigator>
+                        <Stack.Screen name="Home" component={HomeScreen} />
+                        <Stack.Screen name="Add" component={AddScreen} />
+                        <Stack.Screen name="Update" component={UpdateScreen} />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </ActionsProvider>
         </AlbumsProvider>
     );
 };

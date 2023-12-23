@@ -31,6 +31,7 @@ app.get("/album", (req, res) => {
 });
 
 app.post("/album", (req, res) => {
+    console.log("RECEIVED", req.body);
     const newAlbum = req.body;
     const result = addAlbum(newAlbum);
     broadcastUpdate("create", newAlbum);
@@ -38,8 +39,9 @@ app.post("/album", (req, res) => {
 });
 
 app.delete("/album/:albumId", (req, res) => {
-    const albumId = parseInt(req.params.albumId);
+    const albumId = req.params.albumId;
     const result = deleteAlbum(albumId);
+    console.log(albumId);
     broadcastUpdate("remove", albumId);
     res.json(result);
 });

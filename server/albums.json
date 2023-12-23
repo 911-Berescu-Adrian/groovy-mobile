@@ -1,10 +1,29 @@
 [
   {
-    "albumId": 0,
-    "title": "dd",
+    "albumId": "bchr7nz",
+    "title": "kleo",
     "artist": "OH year",
     "year": 14,
     "genre": "nibil",
     "noSongs": 15
+  },
+  {
+    "actionType": "create",
+    "albumId": "sdquc7a",
+    "title": "1",
+    "artist": "1",
+    "year": 1,
+    "genre": "1",
+    "noSongs": 1
+  },
+  {
+    "queueId": 3,
+    "actionType": "create",
+    "albumId": "pei4uvv",
+    "title": "2",
+    "artist": "2",
+    "year": 2,
+    "genre": "2",
+    "noSongs": 2
   }
 ]

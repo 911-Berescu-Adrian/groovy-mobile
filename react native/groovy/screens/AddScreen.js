@@ -1,11 +1,14 @@
-// AddAlbumScreen.js
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import { useAlbumsContext } from "../contexts/AlbumsContext";
-import { insertAlbum } from "../db/DatabaseService";
+import { insertAlbum, insertTemporaryAction } from "../db/DatabaseService";
+import axios from "axios";
+import { BACKEND_URL } from "../constants";
+import { useActionsContext } from "../contexts/ActionContext";
 
 const AddAlbumScreen = ({ navigation }) => {
     const { albums, setAlbums } = useAlbumsContext();
+    const { actions, setActions } = useActionsContext();
 
     const [title, setTitle] = useState("");
     const [artist, setArtist] = useState("");
@@ -20,7 +23,7 @@ const AddAlbumScreen = ({ navigation }) => {
         }
 
         const newAlbum = {
-            albumId: albums.reduce((maxId, album) => Math.max(maxId, album.albumId), 0) + 1,
+            albumId: Math.random().toString(36).slice(3, 9),
             title,
             artist,
             year: parseInt(year),
@@ -28,7 +31,24 @@ const AddAlbumScreen = ({ navigation }) => {
             noSongs: parseInt(noSongs),
         };
 
-        insertAlbum(newAlbum, () => setAlbums([...albums, newAlbum]), alert);
+        const newAction = {
+            actionType: "create",
+            albumId: newAlbum.albumId,
+            title,
+            artist,
+            year: parseInt(year),
+            genre,
+            noSongs: parseInt(noSongs),
+        };
+
+        insertTemporaryAction(
+            newAction,
+            () => {
+                setAlbums([...albums, newAlbum]);
+                setActions([...actions, newAction]);
+            },
+            alert
+        );
 
         navigation.goBack();
     };
